@@ -17,9 +17,12 @@
 package com.example.fido2.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.fido2.repository.AuthRepository
 import com.google.android.gms.fido.fido2.Fido2ApiClient
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,8 +32,16 @@ import javax.inject.Inject
 
     val signInState = repository.signInState
 
+
     fun setFido2ApiClient(client: Fido2ApiClient?) {
         repository.setFido2APiClient(client)
+    }
+
+
+    fun signOut(){
+        viewModelScope.launch{
+            repository.signOut()
+        }
     }
 
 }

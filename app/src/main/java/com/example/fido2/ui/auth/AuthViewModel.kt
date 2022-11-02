@@ -22,6 +22,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.fido2.repository.AuthRepository
 import com.example.fido2.repository.SignInState
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredential
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialCreationOptions
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,46 +54,67 @@ class AuthViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     private val signinRequestChannel = Channel<PendingIntent>(capacity = Channel.CONFLATED)
-    val signinRequests = signinRequestChannel.receiveAsFlow()
+    val signInRequests = signinRequestChannel.receiveAsFlow()
 
-    init {
-        // See if we can authenticate using FIDO.
-        viewModelScope.launch {
-            val intent = repository.signinRequest()
-            if (intent != null) {
-                signinRequestChannel.send(intent)
-            }
-        }
-    }
 
     val currentUsername = repository.signInState.map { state ->
         when (state) {
             is SignInState.SigningIn -> state.username
             is SignInState.SignedIn -> state.username
-            else -> "(user)"
+            is SignInState.CompletedSignIn -> state.username
+            else -> {}
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), "(user)")
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
+
+    suspend fun signIn(){
+        val intent = repository.signInRequest(currentUsername.value.toString())
+        if (intent != null) {
+            signinRequestChannel.send(intent)
+        }
+    }
 
     fun submitPassword() {
         viewModelScope.launch {
+            repository.password(currentUsername.value.toString())
             _processing.value = true
             try {
-                repository.password(password.value)
             } finally {
                 _processing.value = false
             }
         }
     }
 
-    fun signinResponse(credential: PublicKeyCredential) {
+    fun signInResponse(credential: PublicKeyCredential) {
         viewModelScope.launch {
             _processing.value = true
             try {
                 repository.signinResponse(credential)
+                signInToBankUI(currentUsername.value.toString())
             } finally {
                 _processing.value = false
             }
         }
     }
+
+    private fun signInToBankUI(username: String){
+        viewModelScope.launch{
+            _processing.value = true
+            try {
+                repository.signInToBankUI(username)
+            } finally {
+                _processing.value = false
+            }
+        }
+    }
+
+     fun userNameVerified() {
+         viewModelScope.launch {
+             try {
+                 // repository.userNameHasBeenVerified()
+             } finally {
+
+             }
+         }
+     }
 
 }

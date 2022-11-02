@@ -48,9 +48,9 @@ class UsernameFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.sending.collect { sending ->
                 if (sending) {
-                    binding.sending.show()
+                 //   binding.sending.show()//
                 } else {
-                    binding.sending.hide()
+                  //  binding.sending.hide()//
                 }
             }
         }

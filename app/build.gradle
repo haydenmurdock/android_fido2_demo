@@ -17,11 +17,11 @@ android {
         versionName '1.0'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
-        buildConfigField 'String', 'API_BASE_URL', "\"https://webauthn-codelab.glitch.me/auth\""
-        resValue 'string', 'host', 'https://webauthn-codelab.glitch.me'
+        buildConfigField 'String', 'API_BASE_URL', "\"https://develop.presidioidentity.net/\""
+        resValue 'string', 'host', 'develop.presidioidentity.net'
         resValue 'string', 'asset_statements', """
            [{
-             "include": "https://webauthn-codelab.glitch.me/.well-known/assetlinks.json"
+             "include": "develop.presidioidentity.net/.well-known/assetlinks.json"
            }]
         """
     }
@@ -55,6 +55,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
 
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     def coroutine_version = '1.5.0'
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version"

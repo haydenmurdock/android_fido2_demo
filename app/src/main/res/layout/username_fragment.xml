@@ -32,14 +32,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="324dp"
+        android:layout_marginBottom="-20dp"
+        app:layout_constraintBottom_toTopOf="@+id/log_in_constraintLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@mipmap/space" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/log_in_constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="800dp"
+        android:layout_marginTop="300dp"
+        android:background="@drawable/blue_card_shape"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <TextView
             android:id="@+id/heading"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/spacing_medium_large"
-            android:gravity="center"
-            android:text="@string/sign_in"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+            android:layout_marginTop="52dp"
+            android:fontFamily="@font/avenir_lt_95_black"
+            android:text="Sign In"
+            android:textColor="@color/black"
+            android:textSize="34sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -54,7 +76,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/heading"
-            app:layout_constraintBottom_toTopOf="@id/next"
+            app:layout_constraintBottom_toTopOf="@id/confirmation_btn"
             app:layout_constraintVertical_chainStyle="packed"
             app:layout_constraintVertical_bias="0.1">
 
@@ -64,6 +86,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/username"
                 android:imeOptions="actionNext"
+                android:background="@color/white"
                 android:inputType="text"
                 android:maxLines="1"
                 android:text="@={viewModel.username}" />
@@ -71,42 +94,59 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
-            android:id="@+id/explanation"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_large"
-            android:layout_marginEnd="@dimen/spacing_large"
-            android:text="@string/sign_in_explanation"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/next"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/next"
+            android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/spacing_medium_large"
-            android:enabled="@{viewModel.nextEnabled}"
-            android:onClick="@{() -> viewModel.sendUsername()}"
-            android:text="@string/next"
-            app:layout_constraintBottom_toTopOf="@id/explanation"
-            app:layout_constraintTop_toBottomOf="@id/container_username"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/helvetica_bold"
+            android:text="Don't have an account?"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.382"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/container_username" />
 
-        <androidx.core.widget.ContentLoadingProgressBar
-            android:id="@+id/sending"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="0dp"
+        <ImageButton
+            android:id="@+id/confirmation_btn"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:indeterminate="true"
+            android:layout_marginTop="75dp"
+            android:background="@drawable/circle_btn"
+            android:src="@drawable/ic_arrow_white"
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
 
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+        <TextView
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:fontFamily="@font/helvetica_bold"
+            android:text="Sign Up"
+            android:textAllCaps="false"
+            android:textColor="@color/dark_pink"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@+id/textView3"
+            app:layout_constraintStart_toEndOf="@+id/textView3"
+            app:layout_constraintTop_toTopOf="@+id/textView3" />
+
+        <ProgressBar
+            android:id="@+id/sending_userName_loader"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/confirmation_btn"
+            app:layout_constraintEnd_toEndOf="@+id/confirmation_btn"
+            app:layout_constraintStart_toStartOf="@+id/confirmation_btn"
+            app:layout_constraintTop_toTopOf="@+id/confirmation_btn" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

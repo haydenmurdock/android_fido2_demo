@@ -24,12 +24,19 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.fido2.R
+import com.example.fido2.api.DataHolder
 import com.example.fido2.databinding.AuthFragmentBinding
+import com.google.android.gms.fido.Fido
+import com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredential
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialCreationOptions
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialRequestOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -42,8 +49,9 @@ class AuthFragment : Fragment() {
 
     private val signIntentLauncher = registerForActivityResult(
         ActivityResultContracts.StartIntentSenderForResult(),
-        ::handleSignResult
+        ::handleSignInResult
     )
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,6 +65,12 @@ class AuthFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.signIn()
+        }
+
         binding.inputPassword.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_GO) {
                 viewModel.submitPassword()
@@ -68,44 +82,39 @@ class AuthFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             launch {
-                viewModel.signinRequests.collect { intent ->
-
+                viewModel.signInRequests.collect { intent ->
                     // TODO(6): Open the fingerprint dialog.
                     // - Open the fingerprint dialog by launching the intent from FIDO2 API.
-
-                }
-            }
-            launch {
-                viewModel.processing.collect { processing ->
-                    if (processing) {
-                        binding.processing.show()
-                    } else {
-                        binding.processing.hide()
-                    }
+                    signIntentLauncher.launch(IntentSenderRequest.Builder(intent).build())
                 }
             }
         }
     }
 
-    private fun handleSignResult(activityResult: ActivityResult) {
+ private fun handleSignInResult(activityResult: ActivityResult) {
 
-        // TODO(7): Handle the ActivityResult
-        // - Extract byte array from result data using Fido.FIDO2_KEY_CREDENTIAL_EXTRA.
-        // (continued below)
-        val bytes: ByteArray? = null
+    // TODO(3): Receive ActivityResult with the new Credential
+    // - Extract byte array from result data using Fido.FIDO2_KEY_CREDENTIAL_EXTRA.
+    // (continued below
+    val bytes = activityResult.data?.getByteArrayExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA)
+    when {
+        activityResult.resultCode != Activity.RESULT_OK ->
+            Toast.makeText(requireContext(), R.string.cancelled, Toast.LENGTH_LONG).show()
+        bytes == null ->
+            Toast.makeText(requireContext(), R.string.credential_error, Toast.LENGTH_LONG)
+                .show()
+        else -> {
+            val credential = PublicKeyCredential.deserializeFromBytes(bytes)
+            val response = credential.response
+            if (response is AuthenticatorErrorResponse) {
+                Toast.makeText(requireContext(), response.errorMessage, Toast.LENGTH_LONG)
+                    .show()
+            } else {
 
-        when {
-            activityResult.resultCode != Activity.RESULT_OK ->
-                Toast.makeText(requireContext(), R.string.cancelled, Toast.LENGTH_SHORT).show()
-            bytes == null ->
-                Toast.makeText(requireContext(), R.string.auth_error, Toast.LENGTH_SHORT).show()
-            else -> {
-
-                // - Deserialize bytes into a PublicKeyCredential.
-                // - Check if the response is an AuthenticationErrorResponse. If so, show a toast.
-                // - Otherwise, pass the credential to the viewModel.
-
+                viewModel.signInResponse(credential)
+                viewModel.userNameVerified()
             }
         }
     }
+}
 }

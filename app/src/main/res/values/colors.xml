@@ -18,4 +18,13 @@
     <color name="primary">#3F51B5</color>
     <color name="primary_dark">#303F9F</color>
     <color name="accent">#6D4C41</color>
+    <color name="windows_blue">#4b92cc</color>
+    <color name="faded_red">#d8315b</color>
+    <color name="black70">#b21e1b18</color>
+    <color name="dark_pink">#ca405d</color>
+    <color name="black">#1e1b18</color>
+    <color name="darkGreyBlue">#d3384b71</color>
+    <color name="lightGrey">#7d8ca3</color>
+    <color name="white">#f1fffa</color>
+    <color name="secondary">#de8f6e</color>
 </resources>

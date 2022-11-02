@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.android.fido2
+package com.example.fido2
 
 import android.util.Base64
 

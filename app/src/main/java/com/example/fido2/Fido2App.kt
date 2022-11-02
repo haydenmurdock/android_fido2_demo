@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package com.example.android.fido2
+package com.example.fido2
 
 import android.app.Application
 import android.os.Build
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.example.fido2.api.AddHeaderInterceptor
-import com.example.fido2.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,6 +35,7 @@ import kotlinx.coroutines.SupervisorJob
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+
 
 @HiltAndroidApp
 class Fido2App : Application()
@@ -54,6 +56,7 @@ object AppModule {
             .connectTimeout(40, TimeUnit.SECONDS)
             .build()
     }
+
 
     @Singleton
     @Provides

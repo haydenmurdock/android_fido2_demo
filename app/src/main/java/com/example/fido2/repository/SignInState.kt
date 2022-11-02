@@ -47,4 +47,8 @@ sealed class SignInState {
     data class SignedIn(
         val username: String
     ) : SignInState()
+
+    data class CompletedSignIn(
+        val username: String
+    ): SignInState()
 }

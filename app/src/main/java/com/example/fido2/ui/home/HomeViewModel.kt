@@ -17,11 +17,13 @@
 package com.example.fido2.ui.home
 
 import android.app.PendingIntent
+import android.hardware.usb.UsbRequest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fido2.repository.AuthRepository
 import com.example.fido2.repository.SignInState
 import com.google.android.gms.fido.fido2.api.common.PublicKeyCredential
+import com.google.android.gms.fido.fido2.api.common.PublicKeyCredentialCreationOptions
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -43,7 +45,8 @@ class HomeViewModel @Inject constructor(
         when (state) {
             is SignInState.SigningIn -> state.username
             is SignInState.SignedIn -> state.username
-            else -> "(user)"
+            is SignInState.CompletedSignIn -> state.username
+            else -> {}
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), "(user)")
 
@@ -51,25 +54,19 @@ class HomeViewModel @Inject constructor(
         viewModelScope, SharingStarted.WhileSubscribed(), emptyList()
     )
 
-    fun reauth() {
-        viewModelScope.launch {
-            repository.clearCredentials()
-        }
-    }
-
     fun signOut() {
         viewModelScope.launch {
             repository.signOut()
         }
     }
 
-    suspend fun registerRequest(): PendingIntent? {
-        _processing.value = true
-        try {
-            return repository.registerRequest()
-        } finally {
-            _processing.value = false
-        }
+     suspend fun registerPIRequest(publicKeyCredentialCreationOptions: PublicKeyCredentialCreationOptions): PendingIntent?{
+            _processing.value = true
+            try {
+               return repository.registerPresidioRequest(publicKeyCredentialCreationOptions)
+            } finally {
+                _processing.value = false
+            }
     }
 
     fun registerResponse(credential: PublicKeyCredential) {
@@ -77,17 +74,18 @@ class HomeViewModel @Inject constructor(
             _processing.value = true
             try {
                 repository.registerResponse(credential)
+                signInToBankUI(currentUsername.value.toString())
             } finally {
                 _processing.value = false
             }
         }
     }
 
-    fun removeKey(credentialId: String) {
-        viewModelScope.launch {
+    fun signInToBankUI(username: String){
+        viewModelScope.launch{
             _processing.value = true
             try {
-                repository.removeKey(credentialId)
+                repository.signInToBankUI(username)
             } finally {
                 _processing.value = false
             }

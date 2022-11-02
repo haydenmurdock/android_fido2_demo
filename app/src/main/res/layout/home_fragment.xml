@@ -37,59 +37,70 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/windows_blue">
+
             <TextView
                 android:id="@+id/welcome"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/spacing_medium"
+                android:layout_marginBottom="69dp"
+                android:fontFamily="@font/avenir_lt_95_black"
                 android:gravity="center"
-                android:text="@{@string/welcome(viewModel.currentUsername)}"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+                android:text="@{@string/user(viewModel.currentUsername)}"
+                android:textColor="@color/black"
+                android:textSize="34sp"
+                app:layout_constraintBottom_toTopOf="@+id/textView5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Welcome, John!" />
+                tools:text="Welcome, John!">
+
+            </TextView>
 
             <TextView
-                android:id="@+id/credentials_caption"
-                android:layout_width="0dp"
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/spacing_medium"
-                android:labelFor="@id/credentials"
-                android:text="@string/credentials_caption"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/welcome" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/credentials"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:clipToPadding="false"
-                android:orientation="vertical"
-                android:paddingBottom="@dimen/dodge_app_bar"
-                android:paddingTop="@dimen/spacing_medium"
+                android:fontFamily="@font/avenir_lt_95_black"
+                android:text="Touch ID sensor to"
+                android:textColor="@color/white"
+                android:textSize="28sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/credentials_caption"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/credential_item" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.18" />
 
             <TextView
-                android:id="@+id/empty_credentials"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:gravity="center_horizontal"
-                android:padding="@dimen/spacing_large"
-                android:text="@string/empty_credentials"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/credentials"
-                app:layout_constraintEnd_toEndOf="@id/credentials"
-                app:layout_constraintStart_toStartOf="@id/credentials"
-                app:layout_constraintTop_toTopOf="@id/credentials" />
+                android:id="@+id/textView7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/avenir_lt_95_black"
+                android:text="get started"
+                android:textColor="@color/white"
+                android:textSize="28sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/add"
+                android:layout_width="233dp"
+                android:layout_height="209dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView7"
+                app:layout_constraintVertical_bias="0.23000002"
+                app:srcCompat="@drawable/fingerprint_image" />
+
 
             <androidx.core.widget.ContentLoadingProgressBar
                 android:id="@+id/processing"
@@ -102,7 +113,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:visibility="visible" />
-
+        </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.bottomappbar.BottomAppBar
@@ -111,17 +122,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
-            app:backgroundTint="?attr/colorPrimary"
+            app:backgroundTint="@color/windows_blue"
             app:fabAlignmentMode="end"
             app:menu="@menu/home" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/add_credential"
-            app:layout_anchor="@id/app_bar"
-            app:srcCompat="@drawable/ic_add" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
