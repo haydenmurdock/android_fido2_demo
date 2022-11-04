@@ -57,7 +57,6 @@ class AuthRepository @Inject constructor(
         val SESSION_ID = stringPreferencesKey("session_id")
         val CREDENTIALS = stringSetPreferencesKey("credentials")
         val LOCAL_CREDENTIAL_ID = stringPreferencesKey("local_credential_id")
-      //  val IS_USERNAME_VERIFIED = stringPreferencesKey("is_username_verified")
 
         suspend fun <T> DataStore<Preferences>.read(key: Preferences.Key<T>): T? {
             return data.map { it[key] }.first()
@@ -87,11 +86,6 @@ class AuthRepository @Inject constructor(
     init {
         scope.launch {
             println("auth repo scope launch hit")
-            val username = dataStore.read(USERNAME)
-//            dataStore.edit { prefs ->
-//                prefs[IS_USERNAME_VERIFIED] = "false"
-//            }
-//            val isVerified = dataStore.read(IS_USERNAME_VERIFIED)
             val initialState = SignInState.SignedOut
             signInStateMutable.emit(initialState)
 
@@ -103,22 +97,14 @@ class AuthRepository @Inject constructor(
      * [SignInState.SigningIn].
      */
     suspend fun username(username: String) {
-        saveUsername(username)
         when (val result = presidioApi.username(username)) {
-
             ApiResult.SignedOutFromServer -> forceSignOut()
             is ApiResult.Success -> {
-
                 DataHolder.setPkcco(result.data)
                 signInStateMutable.emit(SignInState.SigningIn(username))
             }
         }
     }
-    suspend fun saveUsername(username: String){
-
-
-    }
-
 
     /**
      * Signs in with a password. This should be called only when the sign-in state is
@@ -148,16 +134,7 @@ class AuthRepository @Inject constructor(
             .map { (_, credential) -> credential }
     }
 
-    /**
-     * Clears the credentials. The sign-in state will proceed to [SignInState.SigningIn].
-     */
-
-    /**
-     * Clears all the sign-in information. The sign-in state will proceed to
-     * [SignInState.SignedOut].
-     */
     suspend fun signOut() {
-
         signInStateMutable.emit(SignInState.SignedOut)
     }
 
@@ -183,20 +160,14 @@ class AuthRepository @Inject constructor(
      */
     suspend fun registerResponse(credential: PublicKeyCredential) {
         try {
-            val sessionId = ""
-            val credentialId = credential.id
-            println(credential)
             when (val result = presidioApi.registerResponse(credential)) {
                 ApiResult.SignedOutFromServer -> forceSignOut()
-                is ApiResult.Success -> {
-                    dataStore.edit { prefs ->
-                        result.sessionId?.let { prefs[SESSION_ID] = it }
-                        prefs[CREDENTIALS] = result.data.toStringSet()
-                        prefs[LOCAL_CREDENTIAL_ID] = credentialId
-                    }
+               is ApiResult.Success -> {
                     val name = dataStore.read(USERNAME)
-                    if(!name.isNullOrBlank()){
+                    if(!name.isNullOrBlank() && result.data.equals("ok")){
                         signInStateMutable.emit(SignInState.SignedIn(name))
+                    } else {
+                        signInStateMutable.emit(SignInState.SignInError(result.data))
                     }
 
                 }
@@ -205,21 +176,6 @@ class AuthRepository @Inject constructor(
             Log.e(TAG, "Cannot call registerResponse", e)
         }
 
-    }
-
-    /**
-     * Removes a credential registered on the server.
-     */
-    suspend fun removeKey(credentialId: String) {
-//        try {
-//            val sessionId = dataStore.read(SESSION_ID)!!
-//            when (api.removeKey(sessionId, credentialId)) {
-//                ApiResult.SignedOutFromServer -> forceSignOut()
-//                is ApiResult.Success -> refreshCredentials()
-//            }
-//        } catch (e: ApiException) {
-//            Log.e(TAG, "Cannot call removeKey", e)
-//        }
     }
 
     /**
@@ -246,18 +202,17 @@ class AuthRepository @Inject constructor(
     suspend fun signinResponse(credential: PublicKeyCredential) {
         try {
             val username = dataStore.read(USERNAME)!!
-            val sessionId = dataStore.read(SESSION_ID)!!
             val credentialId = credential.rawId.toBase64()
             when (val result = presidioApi.signInResponse(credential)) {
                 ApiResult.SignedOutFromServer -> forceSignOut()
                 is ApiResult.Success -> {
                     dataStore.edit { prefs ->
-                        result.sessionId?.let { prefs[SESSION_ID] = it }
-                        prefs[CREDENTIALS] = result.data.toStringSet()
+
                         prefs[LOCAL_CREDENTIAL_ID] = credentialId
                     }
-                    signInStateMutable.emit(SignInState.CompletedSignIn(username))
-
+                    if(result.data == ("ok")) {
+                        signInStateMutable.emit(SignInState.CompletedSignIn(username))
+                    }
                 }
             }
         } catch (e: ApiException) {
@@ -269,7 +224,4 @@ class AuthRepository @Inject constructor(
         signInStateMutable.emit(SignInState.CompletedSignIn(username))
     }
 
-    suspend fun getUsername(): String? {
-        return dataStore.read(USERNAME)
-    }
 }

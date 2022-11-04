@@ -17,7 +17,8 @@
 
         <activity
             android:name="com.example.fido2.ui.MainActivity"
-            android:windowSoftInputMode="stateUnchanged|adjustResize">
+            android:windowSoftInputMode="stateUnchanged|adjustResize"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

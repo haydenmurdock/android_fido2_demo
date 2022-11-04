@@ -26,12 +26,6 @@ sealed class ApiResult<out R> {
      */
     class Success<T>(
         /**
-         * The session ID to be used for the subsequent API calls.
-         * Might be null if the API call does not return a new cookie.
-         */
-        val sessionId: String?,
-
-        /**
          * The result data.
          */
         val data: T

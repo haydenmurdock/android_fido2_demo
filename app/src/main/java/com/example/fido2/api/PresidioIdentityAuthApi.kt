@@ -12,9 +12,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody
 import ru.gildor.coroutines.okhttp.await
-import java.io.StringReader
 import java.io.StringWriter
-import java.lang.RuntimeException
 import javax.inject.Inject
 
 class PresidioIdentityAuthApi  @Inject constructor(
@@ -22,9 +20,8 @@ private val client: OkHttpClient
 ) {
     companion object {
       //  private const val BASE_URL = "https://fido2-functions.azurewebsites.net/api/"
-        private const val BASE_URL = "https://develop.presidioidentity.net/api/"
-        private val JSON = "application/json".toMediaTypeOrNull()
-        private const val SessionIdKey = "connect.sid="
+         private val JSON = "application/json".toMediaTypeOrNull()
+        private const val DEVELOP_BASE_URL = "https://develop.presidioidentity.net/api/"
         private const val TAG = "Presidio_Api"
     }
 
@@ -88,7 +85,7 @@ private val client: OkHttpClient
     suspend fun username(username: String): ApiResult<PublicKeyCredentialCreationOptions> {
         val call = client.newCall(
             Request.Builder()
-                .url("${BASE_URL}attestation/options")
+                .url("${DEVELOP_BASE_URL}attestation/options")
                 .method("POST", jsonRequestBody {
                     name("username").value(username)
                     name("userVerification").value("preferred")
@@ -104,7 +101,7 @@ private val client: OkHttpClient
         )
 
         val response = call.await()
-        return response.result("Error calling attestation/options") {
+        return response.result {
             parsePublicKeyCredentialCreationOptions(
                 body ?: throw ApiException("Empty response from attestation/options")
             )
@@ -129,14 +126,14 @@ private val client: OkHttpClient
 
     suspend fun registerResponse(
         credential: PublicKeyCredential
-    ): ApiResult<List<Credential>> {
+    ): ApiResult<String> {
         val rawId = credential.rawId.toBase64()
         val response = credential.response as AuthenticatorAttestationResponse
         println(response.clientDataJSON.toBase64())
         println(response.attestationObject.toBase64())
         val call = client.newCall(
             Request.Builder()
-                .url("${BASE_URL}attestation/result")
+                .url("${DEVELOP_BASE_URL}attestation/result")
                 .method("POST", jsonRequestBody {
                     name("id").value(rawId)
                     name("type").value(PublicKeyCredentialType.PUBLIC_KEY.toString())
@@ -153,10 +150,8 @@ private val client: OkHttpClient
                 .build()
         )
         val apiResponse = call.await()
-        return apiResponse.result("Error calling /register/result") {
-            parseUserCredentials(
-                body ?: throw ApiException("Empty response from /register/result")
-            )
+        return apiResponse.result {
+           parseSuccessResponse(body ?: throw ApiException("Empty response from attestation/result for registerResponse"))
         }
     }
     /**
@@ -189,13 +184,13 @@ private val client: OkHttpClient
     ): ApiResult<PublicKeyCredentialRequestOptions> {
         val call = client.newCall(
             Request.Builder()
-                .url("${BASE_URL}assertion/options")
+                .url("${DEVELOP_BASE_URL}assertion/options")
                 .method("POST", jsonRequestBody {
                     name("username").value(username)
                     name("userVerification").value("required")
                 }).build())
             val response = call.await()
-        return response.result("Error calling /assertion/options") {
+        return response.result {
             parsePublicKeyCredentialRequestOptions(
                 body ?: throw ApiException("Empty response from /assertion/options")
             )
@@ -218,12 +213,12 @@ private val client: OkHttpClient
 
     suspend fun signInResponse(
         credential: PublicKeyCredential
-    ): ApiResult<List<Credential>> {
+    ): ApiResult<String> {
         val rawId = credential.rawId.toBase64()
         val response = credential.response as AuthenticatorAssertionResponse
         val call = client.newCall(
             Request.Builder()
-                .url("${BASE_URL}attestation/result")
+                .url("${DEVELOP_BASE_URL}attestation/result")
                 .method("POST", jsonRequestBody {
                     name("id").value(rawId)
                     name("type").value(PublicKeyCredentialType.PUBLIC_KEY.toString())
@@ -246,8 +241,8 @@ private val client: OkHttpClient
                 .build()
         )
         val apiResponse = call.await()
-        return apiResponse.result("Error calling attestation/result") {
-           parseUserCredentials(body ?: throw ApiException("Empty response from attestation/result"))
+        return apiResponse.result {
+           parseSuccessResponse(body ?: throw ApiException("Empty response from attestation/result"))
         }
     }
 
@@ -260,8 +255,6 @@ private val client: OkHttpClient
         }
         return output.toString().toRequestBody(JSON)
     }
-
-
 
     private fun parsePublicKeyCredentialRequestOptions(
         body: ResponseBody
@@ -283,8 +276,6 @@ private val client: OkHttpClient
         }
         return builder.build()
     }
-
-
 
     private fun parsePublicKeyCredentialCreationOptions(
         body: ResponseBody
@@ -416,7 +407,7 @@ private val client: OkHttpClient
                 else -> reader.skipValue()
             }
         }
-        reader.beginObject()
+        reader.endObject()
         if (errorMessage.length >  1) {
             return  errorMessage
         }
@@ -444,96 +435,11 @@ private val client: OkHttpClient
         return parameters
     }
 
-    private fun parseUserCredentials(body: ResponseBody): List<Credential> {
-        return mutableListOf()
-        fun readCredentials(reader: JsonReader): List<Credential> {
-            val credentials = mutableListOf<Credential>()
-            reader.beginArray()
-            while (reader.hasNext()) {
-                reader.beginObject()
-                var id: String? = null
-                var publicKey = ""
-                while (reader.hasNext()) {
-                    when (reader.nextName()) {
-                        "credId" -> id = reader.nextString()
-                        // "publicKey" -> publicKey = reader.nextString()
-                        else -> reader.skipValue()
-                    }
-                }
-                reader.endObject()
-                if (id != null && publicKey != null) {
-                    println("Adding credentials in parse. Id = $id, publickKey = $publicKey")
-                    credentials.add(Credential(id, publicKey))
-                }
-            }
-            reader.endArray()
-            return credentials
-        }
-        JsonReader(body.byteStream().bufferedReader()).use { reader ->
-            reader.beginObject()
-            while (reader.hasNext()) {
-                val name = reader.nextName()
-                if (name == "credentials") {
-                    return readCredentials(reader)
-                } else {
-                    reader.skipValue()
-                }
-            }
-            reader.endObject()
-        }
-        throw ApiException("Cannot parse credentials")
-    }
-
-
-
-    private fun <T> Response.result(errorMessage: String, data: Response.() -> T): ApiResult<T> {
+    private fun <T> Response.result(data: Response.() -> T): ApiResult<T> {
         if (!isSuccessful) {
-//            if (code == 401) { // Unauthorized
-//                return ApiResult.SignedOutFromServer
-//            }
-            // All other errors throw an exception.
-            return ApiResult.Success("", data())
-            //throwResponseError(this, errorMessage)
-
+            return ApiResult.Success(data())
         }
-       // val cookie = headers("set-cookie").find { it.startsWith(GoogleAuthApi.SessionIdKey) }
-      //  val sessionId = if (cookie != null) parseSessionId(cookie) else null
-        //: TODO REMOVE SESSION ID
-        return ApiResult.Success("", data())
-    }
-
-    private fun throwResponseError(response: Response, message: String): Nothing {
-        val b = response.body
-        if (b != null) {
-            throw ApiException("$message; ${parseError(b)}")
-        } else {
-            throw ApiException(message)
-        }
-    }
-    private fun parseError(body: ResponseBody): String {
-        val errorString = body.string()
-        try {
-            JsonReader(StringReader(errorString)).use { reader ->
-                reader.beginObject()
-                while (reader.hasNext()) {
-                    val name = reader.nextName()
-                    if (name == "error") {
-                        val token = reader.peek()
-                        if (token == JsonToken.STRING) {
-                            return reader.nextString()
-                        }
-                        return "Unknown"
-                    } else {
-                        reader.skipValue()
-                    }
-                }
-                reader.endObject()
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Cannot parse the error: $errorString", e)
-            // Don't throw; this method is called during throwing.
-        }
-        return ""
+        return ApiResult.Success(data())
     }
 
 }
