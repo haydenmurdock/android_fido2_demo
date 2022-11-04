@@ -179,7 +179,7 @@ private val client: OkHttpClient
                             }
                 }
      */
-    suspend fun signInRequest(
+    suspend fun signInWith(
         username: String,
     ): ApiResult<PublicKeyCredentialRequestOptions> {
         val call = client.newCall(

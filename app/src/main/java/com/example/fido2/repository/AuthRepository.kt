@@ -184,7 +184,7 @@ class AuthRepository @Inject constructor(
      */
     suspend fun signInRequest(username: String): PendingIntent? {
         fido2ApiClient?.let { client ->
-            when (val apiResult = presidioApi.signInRequest(username)) {
+            when (val apiResult = presidioApi.signInWith(username)) {
                 ApiResult.SignedOutFromServer -> forceSignOut()
                 is ApiResult.Success -> {
                     val task = client.getSignPendingIntent(apiResult.data)
