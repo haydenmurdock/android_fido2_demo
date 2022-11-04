@@ -97,7 +97,7 @@ class AuthRepository @Inject constructor(
      * [SignInState.SigningIn].
      */
     suspend fun username(username: String) {
-        when (val result = presidioApi.username(username)) {
+        when (val result = presidioApi.registerWith(username)) {
             ApiResult.SignedOutFromServer -> forceSignOut()
             is ApiResult.Success -> {
                 DataHolder.setPkcco(result.data)

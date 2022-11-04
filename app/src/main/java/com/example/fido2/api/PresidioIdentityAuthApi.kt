@@ -82,7 +82,7 @@ private val client: OkHttpClient
     ////          "attestation": "direct"
     ////       }
      */
-    suspend fun username(username: String): ApiResult<PublicKeyCredentialCreationOptions> {
+    suspend fun registerWith(username: String): ApiResult<PublicKeyCredentialCreationOptions> {
         val call = client.newCall(
             Request.Builder()
                 .url("${DEVELOP_BASE_URL}attestation/options")
