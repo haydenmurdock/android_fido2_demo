@@ -5,7 +5,7 @@
       <map>
         <entry key="app/src/main/res/drawable-v24/ic_arrow_white.xml" value="0.324" />
         <entry key="app/src/main/res/drawable/ic_add.xml" value="0.222" />
-        <entry key="app/src/main/res/layout/auth_fragment.xml" value="0.21822916666666667" />
+        <entry key="app/src/main/res/layout/auth_fragment.xml" value="0.33" />
         <entry key="app/src/main/res/layout/bank_account.xml" value="0.21822916666666667" />
         <entry key="app/src/main/res/layout/credential_item.xml" value="0.33125" />
         <entry key="app/src/main/res/layout/fragment_bank_account.xml" value="0.1703125" />
@@ -13,6 +13,7 @@
         <entry key="app/src/main/res/layout/main_activity.xml" value="0.17916666666666667" />
         <entry key="app/src/main/res/layout/username_fragment.xml" value="0.2125" />
         <entry key="app/src/main/res/menu/home.xml" value="0.2125" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2255" />
       </map>
     </option>
   </component>

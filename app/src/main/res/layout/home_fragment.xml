@@ -23,7 +23,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.fido2.ui.home.HomeViewModel" />
+            type="com.presidioIdentityDemo.fido2.ui.home.HomeViewModel" />
 
     </data>
 

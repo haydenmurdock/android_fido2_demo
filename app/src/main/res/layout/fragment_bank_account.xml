@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.fido2.ui.bank.BankAccountViewModel" />
+            type="com.presidioIdentityDemo.fido2.ui.bank.BankAccountViewModel" />
 
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
