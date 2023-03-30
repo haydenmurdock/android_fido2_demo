@@ -80,7 +80,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun signInToBankUI(username: String){
+    private fun signInToBankUI(username: String){
         viewModelScope.launch{
             _processing.value = true
             try {
@@ -90,5 +90,4 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-
 }

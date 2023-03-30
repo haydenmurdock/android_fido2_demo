@@ -19,11 +19,8 @@ class PresidioIdentityAuthApi  @Inject constructor(
 private val client: OkHttpClient
 ) {
     companion object {
-      //  private const val BASE_URL = "https://fido2-functions.azurewebsites.net/api/"
          private val JSON = "application/json".toMediaTypeOrNull()
-       // private const val DEVELOP_BASE_URL = "https://develop.presidioidentity.net/api/"
         private const val DEVELOP_BASE_URL = "https://haydenapp.app.presidioidentity.net/fido2/"
-        private const val TAG = "Presidio_Api"
     }
 
     private fun JsonWriter.objectValue(body: JsonWriter.() -> Unit) {
@@ -77,8 +74,7 @@ private val client: OkHttpClient
     ////            "authenticatorSelection": {
     ////               "requiresResidentKey": "false",
     ////              "userVerification": "true",
-    ////              "authenticatorAttachment": "platform",
-    ////              "requireResidentKey": false
+    ////              "authenticatorAttachment": "platform"
     ////              },
     ////          "attestation": "direct"
     ////       }
@@ -102,7 +98,6 @@ private val client: OkHttpClient
         )
 
         val response = call.await()
-   //     println(response.body?.string())
         return response.result {
             parsePublicKeyCredentialCreationOptions(
                 body ?: throw ApiException("Empty response from attestation/options")
@@ -131,8 +126,6 @@ private val client: OkHttpClient
     ): ApiResult<String> {
         val rawId = credential.rawId.toBase64()
         val response = credential.response as AuthenticatorAttestationResponse
-        //TOMMY!!!! right here for the clientDataJSON
-        println(response.clientDataJSON.toBase64())
         val call = client.newCall(
             Request.Builder()
                 .url("${DEVELOP_BASE_URL}attestation/result")
@@ -152,7 +145,6 @@ private val client: OkHttpClient
                 .build()
         )
         val apiResponse = call.await()
- //       println(apiResponse.body?.string())
         return apiResponse.result {
            parseSuccessResponse(body ?: throw ApiException("Empty response from attestation/result for registerResponse"))
         }

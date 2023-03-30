@@ -51,10 +51,8 @@ class AuthRepository @Inject constructor(
 
     private companion object {
         const val TAG = "AuthRepository"
-
         // Keys for SharedPreferences
         val USERNAME = stringPreferencesKey("username")
-        val SESSION_ID = stringPreferencesKey("session_id")
         val CREDENTIALS = stringSetPreferencesKey("credentials")
         val LOCAL_CREDENTIAL_ID = stringPreferencesKey("local_credential_id")
 

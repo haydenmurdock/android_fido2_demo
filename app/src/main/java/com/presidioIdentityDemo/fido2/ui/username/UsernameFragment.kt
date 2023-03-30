@@ -47,11 +47,6 @@ class UsernameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.sending.collect { sending ->
-                if (sending) {
-                 //   binding.sending.show()//
-                } else {
-                  //  binding.sending.hide()//
-                }
             }
         }
 

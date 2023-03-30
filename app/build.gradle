@@ -13,8 +13,8 @@ android {
         applicationId 'com.presidioIdentityDemo.fido2'
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 33
-        versionName '3.3'
+        versionCode 35
+        versionName '3.5'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         buildConfigField 'String', 'API_BASE_URL', "\"https://haydenapp.app.presidioidentity.net/\""

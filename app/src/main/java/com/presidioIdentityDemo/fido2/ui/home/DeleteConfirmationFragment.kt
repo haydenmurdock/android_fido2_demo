@@ -26,12 +26,6 @@ class DeleteConfirmationFragment : DialogFragment() {
 
     companion object {
         private const val ARG_CREDENTIAL_ID = "credential_id"
-
-        fun newInstance(credentialId: String) = DeleteConfirmationFragment().apply {
-            arguments = Bundle().apply {
-                putString(ARG_CREDENTIAL_ID, credentialId)
-            }
-        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

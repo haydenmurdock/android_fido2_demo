@@ -31,11 +31,9 @@ import javax.inject.Inject
 
     val signInState = repository.signInState
 
-
     fun setFido2ApiClient(client: Fido2ApiClient?) {
         repository.setFido2APiClient(client)
     }
-
 
     fun signOut(){
         viewModelScope.launch{

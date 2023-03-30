@@ -49,7 +49,6 @@ class AuthFragment : Fragment() {
         ::handleSignInResult
     )
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -110,8 +109,8 @@ class AuthFragment : Fragment() {
 
                 viewModel.signInResponse(credential)
                 viewModel.userNameVerified()
+                }
             }
         }
     }
-}
 }

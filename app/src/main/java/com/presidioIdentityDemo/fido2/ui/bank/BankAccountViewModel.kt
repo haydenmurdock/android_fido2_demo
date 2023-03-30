@@ -17,12 +17,4 @@ class BankAccountViewModel @Inject constructor(
             repository.signOut()
         }
     }
-
-    fun userNameVerified(){
-        viewModelScope.launch {
-            //repository.userNameHasBeenVerified()
-        }
-    }
-
-
 }

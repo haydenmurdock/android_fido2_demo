@@ -43,7 +43,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@mipmap/space" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/log_in_constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="800dp"
@@ -146,7 +146,8 @@
             app:layout_constraintStart_toStartOf="@+id/confirmation_btn"
             app:layout_constraintTop_toTopOf="@+id/confirmation_btn" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -42,9 +42,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class HomeFragment : Fragment(), DeleteConfirmationFragment.Listener {
 
-    companion object {
-        private const val FRAGMENT_DELETE_CONFIRMATION = "delete_confirmation"
-    }
 
     private val viewModel: HomeViewModel by viewModels()
     private lateinit var binding: HomeFragmentBinding
@@ -66,21 +63,12 @@ class HomeFragment : Fragment(), DeleteConfirmationFragment.Listener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val credentialAdapter = CredentialAdapter { credentialId ->
-            DeleteConfirmationFragment.newInstance(credentialId)
-                .show(childFragmentManager, FRAGMENT_DELETE_CONFIRMATION)
-        }
+
        publicKeyCredentialCreationOptions = DataHolder.getPkcco()
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.credentials.collect { credentials ->
-               // credentialAdapter.submitList(credentials)
-             //   binding.emptyCredentials.isVisible = credentials.isEmpty()
-              //  binding.credentialsCaption.isVisible = credentials.isNotEmpty()
-            }
         }
 
-        // Menu
         binding.appBar.replaceMenu(R.menu.home)
         binding.appBar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -117,10 +105,6 @@ class HomeFragment : Fragment(), DeleteConfirmationFragment.Listener {
         }
     }
 
-    override fun onDeleteConfirmed(credentialId: String) {
-     //   viewModel.removeKey(credentialId)
-    }
-
     private fun handleCreateCredentialResult(activityResult: ActivityResult) {
 
         // TODO(3): Receive ActivityResult with the new Credential
@@ -144,6 +128,10 @@ class HomeFragment : Fragment(), DeleteConfirmationFragment.Listener {
                 }
             }
         }
+
+    }
+
+    override fun onDeleteConfirmed(credentialId: String) {
 
     }
 }

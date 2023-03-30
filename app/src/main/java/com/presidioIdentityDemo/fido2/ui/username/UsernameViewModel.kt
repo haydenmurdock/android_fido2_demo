@@ -38,10 +38,6 @@ class UsernameViewModel @Inject constructor(
 
     val username = MutableStateFlow("")
 
-    val nextEnabled = combine(sending, username) { isSending, username ->
-        !isSending && username.isNotBlank()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
-
     fun sendUsername() {
         val username = username.value
         if (username.isNotBlank()) {
