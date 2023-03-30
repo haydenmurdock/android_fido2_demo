@@ -30,9 +30,7 @@ class BankAccountFragment : Fragment() {
 
         binding.signoutBtnBankAccount.setOnClickListener{
             viewModel.signOut()
-
         }
-        viewModel.userNameVerified()
     }
 
 }
