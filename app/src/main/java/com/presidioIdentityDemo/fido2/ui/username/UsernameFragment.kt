@@ -47,6 +47,7 @@ class UsernameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.sending.collect { sending ->
+                //
             }
         }
 
